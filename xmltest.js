@@ -9,6 +9,17 @@ priv to p12 format
 openssl pkcs12 -export -out js_sig.p12 -in js_sig.cert -inkey js_sig.key
 
 
+.//////////////////////////////
+encryptipn:
+
+
+encryptedContent: CipherData/CipherValue
+
+Keyinfo:
+
+keyEncryptionMethod -> 
+encryptionPublicCert ->
+encryptedKey ->
 
 */
 const fs = require('fs');
@@ -85,7 +96,7 @@ const verifySignature = (myDoc, publicSigKeyPath) => {
 	sig.loadSignature(signatureElement)
     // console.log('# sig', sig);
     var signatureValidation = sig.checkSignature(myDoc);
-    console.log('### signatureValidation ' + signatureValidation);
+    // console.log('### signatureValidation ' + signatureValidation);
 }
 
 const signDocument = (payload, privSigKeyPath, elementToSign) => {
@@ -109,18 +120,25 @@ const signDocument = (payload, privSigKeyPath, elementToSign) => {
 
 
 const main = async() => {
-    // const myDoc = await decryptXml(PAYLOAD_SIGNED_ENCRYPTED, DECRYPTION_PRIV_KEY);
-    // verifySignature(myDoc);
+    // const EASY_PAYLOAD = '<html><body>hello</body></html>';
+    const EASY_PAYLOAD = 'hello';
+    const encryptedDoc = await encrpytXml(EASY_PAYLOAD, ENCRYPTION_PUB_CERT_PATH);
+    // console.log('### encryptedDoc:', encryptedDoc);
+    // const decryptedDoc = await decryptXml(encryptedDoc, DECRYPTION_PRIV_KEY);
+    // console.log('### decryptedDoc:', decryptedDoc);
 
-    let signedDoc = signDocument(PAYLOAD3, SIGNATURE_PRIVATE_KEY_PATH, 'oAuthToken'); //oAuthToken');
-    console.log('### signedDoc', signedDoc);
-    console.log('.................................................\n\n');
-    const encryptedDoc = await encrpytXml(signedDoc, ENCRYPTION_PUB_CERT_PATH);
-    console.log('### encryptedDoc', encryptedDoc);
-    console.log('.................................................\n\n');
-    const decryptedDoc = await decryptXml(encryptedDoc, DECRYPTION_PRIV_KEY);
-    console.log('### decryptedDoc', decryptedDoc);
-    verifySignature(decryptedDoc, SIGNATURE_PUBLIC_KEY_PATH); 
+
+
+    // complete test 
+    // let signedDoc = signDocument(PAYLOAD3, SIGNATURE_PRIVATE_KEY_PATH, 'oAuthToken'); //oAuthToken');
+    // console.log('### signedDoc', signedDoc);
+    // console.log('.................................................\n\n');
+    // const encryptedDoc = await encrpytXml(signedDoc, ENCRYPTION_PUB_CERT_PATH);
+    // console.log('### encryptedDoc', encryptedDoc);
+    // console.log('.................................................\n\n');
+    // const decryptedDoc = await decryptXml(encryptedDoc, DECRYPTION_PRIV_KEY);
+    // console.log('### decryptedDoc', decryptedDoc);
+    // verifySignature(decryptedDoc, SIGNATURE_PUBLIC_KEY_PATH); 
 
 
 }
