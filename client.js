@@ -1,23 +1,36 @@
 const fs = require("fs");
 const https = require("https");
-const message = { msg: "Hello!" };
+const message = '<?xml version="1.0" encoding="UTF-8"?><oAuthToken xmlns="http://com.citi.citiconnect/services/types/oauthtoken/v1"><grantType>client_credentials</grantType><scope>/authenticationservices/v1</scope></oAuthToken>';
 
 const req = https.request(
   {
-    host: "peter.com",
+    // host: "peter.com",
+    host: "tts.sandbox.apib2b.citi.com",
+
     port: 8888,
     secureProtocol: "TLSv1_2_method",
-    key: fs.readFileSync(`${__dirname}/certs/client-key.pem`),
-    cert: fs.readFileSync(`${__dirname}/certs/client-crt.pem`),
+    // key: fs.readFileSync(`${__dirname}/certs/client-key.pem`),
+    // cert: fs.readFileSync(`${__dirname}/certs/client-crt.pem`),
+
+    cert: fs.readFileSync(`${__dirname}/digicert/citi-clientside_deliveryhero_io_388738159/citi-clientside_deliveryhero_io.crt`), 
+    key: fs.readFileSync(`${__dirname}/signed_certs/clientside2.key`),
+
+    
     ca: [
-      fs.readFileSync(`${__dirname}/certs/server-ca-crt.pem`)
+      // fs.readFileSync(`${__dirname}/certs/server-ca-crt.pem`)
+      // fs.readFileSync(`${__dirname}/certs/server-local-ca-crt.pem`)
+      fs.readFileSync(`${__dirname}/tts.sandbox.api.citi.com.cer`)
     ],
-    path: "/",
-    method: "GET",
+    
+    path: "/tts/api/v1/oauth2/token",
+    method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(JSON.stringify(message))
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+      // "Content-Length": Buffer.byteLength(JSON.stringify(message))
+      "Authorization" : "Basic NzM2NDI3MDAtMTQwMy00MWZiLWJlYzktMjhlNzdmMTBlNGQ4OnVKM2hNNXVRMnlJNmtIM3dKMHhIN2JEMWNGNHBUOHdCMG9BMHRJNXRFMnFONXNGNGlC"
+    },
+
+
   },
   function(response) {
     console.log("Response statusCode: ", response.statusCode);
@@ -64,3 +77,5 @@ req.on("error", function(err) {
   return;
 });
 req.write(JSON.stringify(message));
+req.end();
+console.log('..');

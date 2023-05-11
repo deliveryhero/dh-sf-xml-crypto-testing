@@ -24,8 +24,9 @@ encryptedKey ->
 */
 const fs = require('fs');
 const xmlcrypto = require('xml-crypto');
-const xmlenc = require('xml-encryption');
+// const xmlenc = require('xml-encryption');
 const xmldom = require('@xmldom/xmldom');
+const XMLTOOLS = require('./xmltools.js');
 
 const ENCRYPTION_PUB_CERT_PATH = '/Users/p.tempfli/mm/citi_dotnet/cert/js1_pub.pem';
 // const ENCRYPTION_PUB_CERT = fs.readFileSync(ENCRYPTION_PUB_CERT_PATH);
@@ -41,38 +42,6 @@ const PAYLOAD_SIGNED_ENCRYPTED = '<EncryptedData Type="http://www.w3.org/2001/04
 // const PAYLOAD2 = '<?xml version=\"1.0\" encoding=\"UTF-8\"?><html><body><h1>Hellox Peter</h1><h2>jahhha</h2></body></html>';
 const PAYLOAD3 = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<oAuthToken\nxmlns=\"http://com.citi.citiconnect/services/types/oauthtoken/v1\" Id="myId">\n<grantType>client_credentials</grantType>\n<scope>/authenticationservices/v1</scope></oAuthToken>';
 
-const encrpytXml = async(payload, publicKeyPath) => {
-    var options = {
-        rsa_pub: fs.readFileSync(publicKeyPath),
-        pem: fs.readFileSync(publicKeyPath),
-        encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
-        keyEncryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p',
-        disallowEncryptionWithInsecureAlgorithm: true,
-        warnInsecureAlgorithm: true
-      };
-      
-      return new Promise((resolve, reject) => {
-        xmlenc.encrypt(payload, options, (err, result) => {
-            if (err) reject(err);
-            else resolve(result);
-        });
-      });
-}
-
-const decryptXml = async (payload, privateKey) => {
-    return new Promise((resolve, reject) => {
-        // console.log('agh');
-        xmlenc.decrypt(payload, 
-            {
-                key : privateKey,
-            },
-            (err, result) => {
-                if (err) reject(err);
-                else resolve(result)
-            }
-        );
-    });
-};
 
 // console.log(DECRYPTION_PRIV_KEY.toString());
 // const afterPassPhrase = crypto.privateDecrypt({ key : DECRYPTION_PRIV_KEY, passphrase : 'pass'});
@@ -118,14 +87,14 @@ const signDocument = (payload, privSigKeyPath, elementToSign) => {
     return sig.getSignedXml();
 }
 
-
+console.log('xxx');
 const main = async() => {
-    // const EASY_PAYLOAD = '<html><body>hello</body></html>';
-    const EASY_PAYLOAD = 'hello';
-    const encryptedDoc = await encrpytXml(EASY_PAYLOAD, ENCRYPTION_PUB_CERT_PATH);
-    // console.log('### encryptedDoc:', encryptedDoc);
-    // const decryptedDoc = await decryptXml(encryptedDoc, DECRYPTION_PRIV_KEY);
-    // console.log('### decryptedDoc:', decryptedDoc);
+    const EASY_PAYLOAD = '<html><body>hello</body></html>';
+    // const EASY_PAYLOAD = 'hello';
+    const encryptedDoc = await XMLTOOLS.encrpytXml(EASY_PAYLOAD, fs.readFileSync(ENCRYPTION_PUB_CERT_PATH));
+    console.log('### encryptedDoc:', encryptedDoc);
+    const decryptedDoc = await XMLTOOLS.decryptXml(encryptedDoc, DECRYPTION_PRIV_KEY);
+    console.log('### decryptedDoc:', decryptedDoc);
 
 
 
